@@ -1,9 +1,7 @@
-package crawler
+package scrago
 
 import (
 	"net/http"
-	"time"
-	"net"
 	"io/ioutil"
 	"bytes"
 	"compress/gzip"
@@ -12,28 +10,8 @@ import (
 	"io"
 )
 
-const UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36"
 
-func NewCrawler() *Crawler {
-	client := &http.Client{
-		Transport: &http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   30 * time.Second,
-				KeepAlive: 30 * time.Second,
-			}).Dial,
-			TLSHandshakeTimeout:   10 * time.Second,
-			ResponseHeaderTimeout: 10 * time.Second,
-			ExpectContinueTimeout: 1 * time.Second,
-		},
-		Timeout: 15 * time.Second,
-	}
-	return &Crawler{
-		Client: client,
-		UserAgent: UserAgent,
-	}
-}
-
-func (c *Crawler) NewHttpRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+func (c *Scrago) NewHttpRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
 	//request
 	req, err := http.NewRequest(method, urlStr, body)
 	if err != nil {
@@ -43,11 +21,11 @@ func (c *Crawler) NewHttpRequest(method, urlStr string, body io.Reader) (*http.R
 	return req, err
 }
 
-func (c *Crawler) HttpGetResponse(url string) (*http.Response, error) {
+func (c *Scrago) HttpGetResponse(url string) (*http.Response, error) {
 	return c.NewHttpRequest(http.MethodGet, url, nil)
 }
 
-func (c *Crawler) HttpPostResponse(url string, data string) (*http.Response, error) {
+func (c *Scrago) HttpPostResponse(url string, data string) (*http.Response, error) {
 	//request
 	req, err := c.NewHttpRequest(http.MethodPost, url, bytes.NewBufferString(data))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -58,7 +36,7 @@ func (c *Crawler) HttpPostResponse(url string, data string) (*http.Response, err
 	return c.Do(req)
 }
 
-func (c *Crawler) HttpGetRaw(url string) ([]byte, error) {
+func (c *Scrago) HttpGetRaw(url string) ([]byte, error) {
 	resp, err := c.HttpGetResponse(url)
 	if err != nil {
 		return nil, err
@@ -72,7 +50,7 @@ func (c *Crawler) HttpGetRaw(url string) ([]byte, error) {
 	return byteBody, nil
 }
 
-func (c *Crawler) HttpPostRaw(url string, data string) ([]byte, error) {
+func (c *Scrago) HttpPostRaw(url string, data string) ([]byte, error) {
 	//client
 	resp, err := c.HttpPostResponse(url, data)
 	if err != nil {
@@ -87,7 +65,7 @@ func (c *Crawler) HttpPostRaw(url string, data string) ([]byte, error) {
 	return byteBody, nil
 }
 
-func (c *Crawler) HttpPostGizpRaw(url string, data []byte) ([]byte, error) {
+func (c *Scrago) HttpPostGizpRaw(url string, data []byte) ([]byte, error) {
 	//zip compress
 	var dataBuffer bytes.Buffer
 	gzipWriter := gzip.NewWriter(&dataBuffer)
@@ -125,7 +103,7 @@ func (c *Crawler) HttpPostGizpRaw(url string, data []byte) ([]byte, error) {
 	return byteBody, nil
 }
 
-func (c *Crawler)  HttpSave(url string, file string) error {
+func (c *Scrago)  HttpSave(url string, file string) error {
 	data, err := c.HttpGetRaw(url)
 	if err != nil {
 		return err
