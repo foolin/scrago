@@ -22,7 +22,12 @@ func (c *Scrago) NewHttpRequest(method, urlStr string, body io.Reader) (*http.Re
 }
 
 func (c *Scrago) HttpGetResponse(url string) (*http.Response, error) {
-	return c.NewHttpRequest(http.MethodGet, url, nil)
+	req, err := c.NewHttpRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	//client
+	return c.Do(req)
 }
 
 func (c *Scrago) HttpPostResponse(url string, data string) (*http.Response, error) {
