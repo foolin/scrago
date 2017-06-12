@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"io"
+	"fmt"
 )
 
 
@@ -112,6 +113,9 @@ func (c *Scrago)  HttpSave(url string, file string) error {
 	data, err := c.HttpGetRaw(url)
 	if err != nil {
 		return err
+	}
+	if len(data) <= 0{
+		return fmt.Errorf("url %v response 0kb size.", url)
 	}
 	//mkdir
 	err = os.MkdirAll(filepath.Dir(file), 0755)
