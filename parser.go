@@ -29,6 +29,7 @@ type CssParser struct {
 func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 	refType := reflect.TypeOf(v)
 	refValue := reflect.ValueOf(v)
+	log.Printf("%#v kind is %v | %v", v, refValue.Kind(), reflect.Ptr)
 	if refValue.Kind() != reflect.Ptr{
 		return fmt.Errorf("%v is non-pointer?",  refType)
 	}
@@ -107,16 +108,26 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 			//Interface
 			//Map
 			//Ptr
+		case reflect.Ptr:
+			subModel := reflect.New(fieldType.Type.Elem())
+			fieldValue.Set(subModel)
+			err = ParserField(subModel.Interface(), node)
+			if err != nil {
+				return fmt.Errorf("%#v parser error: %v", subModel, err)
+			}
 			//Slice
+		//case reflect.Slice:
 
 		case reflect.String:
 			fieldValue.SetString(nodeValue)
 		case reflect.Struct:
 			subModel := reflect.New(fieldType.Type)
-			err = ParserField(subModel, node)
+			log.Printf("%#v", subModel)
+			err = ParserField(subModel.Interface(), node)
 			if err != nil {
-				return fmt.Errorf("%v parser error: %v", fieldType, err)
+				return fmt.Errorf("%#v parser error: %v", subModel, err)
 			}
+			fieldValue.Set(subModel.Elem())
 			//UnsafePointer
 		}
 	}

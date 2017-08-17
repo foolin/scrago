@@ -19,10 +19,15 @@ var rxFunc = regexp.MustCompile("^\\s*([a-zA-Z]+)\\s*\\(([^\\)]*)\\)\\s*$")
 
 type DocModel struct{
 	Name string `css:".header h1::attr(title)"`
+	Head *SubModel `css:".header"`
 }
 
 func (d *DocModel) GetterTitle(s *goquery.Selection) (string, error) {
 	return "ok", nil
+}
+
+type SubModel struct {
+	Title string `css:"h1::attr(title)"`
 }
 
 func main()  {
@@ -36,7 +41,7 @@ func main()  {
 	if err != nil {
 		log.Fatal(err)
 	}else{
-		log.Printf("value: %#v", m)
+		log.Printf("value: %#v\n---\n%#v", m, m.Head)
 	}
 }
 
@@ -44,7 +49,7 @@ func main1()  {
 	model := &DocModel{}
 	runModel(model)
 
-	log.Printf("%v", )
+	log.Printf("%v", 1)
 
 	selectors := strings.Split(`#id div[name='attr']::attr(aaa, aaaa, ccc)`, "::")
 	log.Printf(selectors[0])
@@ -103,7 +108,7 @@ var htmlContent = `
         <div class="clearfix">
             <div class="logo">
                 <a href="/" title="七夕阅读网">
-                    <h1 class="abc" data="aaaa" title="qixi.us">七夕阅读网</h1>
+                    <h1 class="abc" data="aaaa" title="七夕阅读网-qixi.us">七夕阅读网</h1>
                 </a>
             </div>
             <div class="banner">
