@@ -19,6 +19,10 @@ scrago是一个基于golang的爬虫框架，通过一种快速、简单、可�
  go get github.com/foolin/scrago
 ```
 
+# 文档
+
+[Document](https://godoc.org/github.com/foolin/scrago "go document")
+
 # 示例
 
 抓取目标页面：
