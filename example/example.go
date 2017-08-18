@@ -8,6 +8,7 @@ import (
 	"log"
 	"encoding/json"
 	"os"
+	"io/ioutil"
 )
 
 type ExampModel struct {
@@ -48,8 +49,12 @@ type ExampTypeModel struct {
 func main()  {
 	examp := &ExampModel{}
 	//examp := &ExampSubModel{}
-	document, _ := goquery.NewDocumentFromReader(strings.NewReader(exampContent))
-	err := scrago.ParserDocument(examp, document)
+	htmlContent, err := ioutil.ReadFile("./data/example.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	document, _ := goquery.NewDocumentFromReader(strings.NewReader(string(htmlContent)))
+	err = scrago.ParserDocument(examp, document)
 	if err != nil {
 		log.Fatal(err)
 	}else{
@@ -63,64 +68,3 @@ func printjson(v interface{})  {
 	enc.SetIndent("", "    ")
 	enc.Encode(v)
 }
-
-var exampContent = `
-<!doctype html>
-<html class="no-js" lang="">
-
-<head>
-    <meta charset="utf-8">
-    <title>Scrago exmaples</title>
-</head>
-
-<body>
-<div id="header">
-    <div class="container">
-        <div class="clearfix">
-            <div class="logo">
-                <a href="https://github.com/foolin/scrago" title="Scrago exmaple">
-                    <h1 title="Scrago exmaple - crawl framework for go">Scrago exmaple</h1>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="navlink">
-    <div class="container">
-        <ul class="clearfix">
-            <li ><a href="/">Index</a></li>
-            <li ><a href="/list/web" title="web site">Web page</a></li>
-            <li ><a href="/list/pc" title="pc page">Pc Page</a></li>
-            <li ><a href="/list/mobile" title="mobile page">Mobile Page</a></li>
-        </ul>
-    </div>
-</div>
-
-<div id="main">
-	<div class="intro">
-		<h2>Scrago framework</h2>
-		<p>An open source and collaborative framework for extracting the data you need from websites.
-	In a <b>fast</b>, <b>simple</b>, yet extensible way.</p>
-		<div class="keywords">Scrago, Scrap, Spider, Crawl, GoLang, Simple, Easy</div>
-	</div>
-	<div class="typelist">
-		<ul>
-			<li data-type="bool">true</li>
-			<li data-type="int">123</li>
-			<li data-type="float">45.6</li>
-			<li data-type="string">hello</li>
-			<li data-type="array">
-				<ol>
-					<li>Aa</li>
-					<li>Bb</li>
-					<li>Cc</li>
-				</ol>
-			</li>
-		</ul>
-	</div>
-
-</div>
-
-</body>
-</html>`
