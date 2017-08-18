@@ -13,10 +13,151 @@ scrago是一个开源的爬虫框架，通过一种快速、简单、可扩展�
  * 简单
  * 可扩展
 
-# 示例可参考
+# 安装
+
 ```
-exmaple
+ go get github.com/foolin/scrago
 ```
+
+# 示例
+
+假如要抓取抓取页面：
+```html
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <title>Scrago exmaples</title>
+</head>
+
+<body>
+<div id="header">
+    <div class="container">
+        <div class="clearfix">
+            <div class="logo">
+                <a href="https://github.com/foolin/scrago" title="Scrago exmaple">
+                    <h1 title="Scrago exmaple - crawl framework for go">Scrago exmaple</h1>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navlink">
+    <div class="container">
+        <ul class="clearfix">
+            <li ><a href="/">Index</a></li>
+            <li ><a href="/list/web" title="web site">Web page</a></li>
+            <li ><a href="/list/pc" title="pc page">Pc Page</a></li>
+            <li ><a href="/list/mobile" title="mobile page">Mobile Page</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="main">
+    <div class="intro">
+        <h2>Scrago framework</h2>
+        <p>An open source and collaborative framework for extracting the data you need from websites.
+            In a <b>fast</b>, <b>simple</b>, yet extensible way.</p>
+        <div class="keywords">Scrago, Scrap, Spider, Crawl, GoLang, Simple, Easy</div>
+    </div>
+    <div class="typelist">
+        <ul>
+            <li data-type="bool">true</li>
+            <li data-type="int">123</li>
+            <li data-type="float">45.6</li>
+            <li data-type="string">hello</li>
+            <li data-type="array">
+                <ol>
+                    <li>Aa</li>
+                    <li>Bb</li>
+                    <li>Cc</li>
+                </ol>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
+```
+
+
+## 第一步：
+创建抓取数据struct，代码：
+```go
+
+type ExampModel struct {
+	Title string `scrago:"title"`
+	Name string `scrago:"#main>.intro>h2::text()"`
+	Description string `scrago:"#main>.intro>p::html()"`
+	Intro string  `scrago:"#main>.intro::outerHtml()"`
+	Keywords []string  `scrago:"#main .keywords::GetMyKeywords()"`
+}
+
+func (e *ExampModel) GetMyKeywords(s *goquery.Selection) ([]string, error) {
+	v := s.Text()
+	if v == ""{
+		return nil, fmt.Errorf("not found keywords!")
+	}
+	arr := strings.Split(v, ",")
+	for i := 0; i < len(arr); i++{
+		arr[i] = strings.TrimSpace(arr[i])
+	}
+	return arr, nil
+}
+
+```
+
+## 第二步:
+编写抓取逻辑：
+```go
+
+func main()  {
+	examp := ExampModel{}
+	s := scrago.New()
+	err := s.HttpGetParser("https://raw.githubusercontent.com/foolin/scrago/master/example/data/example.html", &examp)
+	if err != nil {
+		log.Fatal(err)
+	}else{
+		printjson(examp)
+	}
+}
+
+func printjson(v interface{})  {
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetEscapeHTML(false)
+	enc.SetIndent("", "    ")
+	enc.Encode(v)
+}
+
+```
+
+## 第三步:
+执行并返回结果：
+
+```json
+
+{
+    "Title": "Scrago exmaples",
+    "Name": "Scrago framework",
+    "Description": "An open source and collaborative framework for extracting the data you need from websites.\n            In a <b>fast</b>, <b>simple</b>, yet extensible way.",
+    "Intro": "<div class=\"intro\">\n        <h2>Scrago framework</h2>\n        <p>An open source and collaborative framework for extracting the data you need from websites.\n            In a <b>fast</b>, <b>simple</b>, yet extensible way.</p>\n        <div class=\"keywords\">Scrago, Scrap, Spider, Crawl, GoLang, Simple, Easy</div>\n    </div>",
+    "Keywords": [
+        "Scrago",
+        "Scrap",
+        "Spider",
+        "Crawl",
+        "GoLang",
+        "Simple",
+        "Easy"
+    ]
+}
+
+```
+
 
 # 依赖
  * github.com/PuerkitoBio/goquery

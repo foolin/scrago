@@ -14,7 +14,7 @@ import (
 //::attr(xxx)
 var rxFunc = regexp.MustCompile("^\\s*([a-zA-Z]+)\\s*\\(([^\\)]*)\\){0,1}\\s*$")
 const (
-	parserTagName = "css"
+	parserTagName = "scrago"
 	parserSplitSep = "::"
 )
 

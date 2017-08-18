@@ -12,13 +12,13 @@ import (
 )
 
 type ExampModel struct {
-	Title string `css:"title"`
-	Name string `css:"#main>.intro>h2::text()"`
-	Description string `css:"#main>.intro>p::html()"`
-	Keywords []string  `css:"#main .keywords::GetMyKeywords()"`
-	Intro string  `css:"#main>.intro::outerHtml()"`
-	TypeList []ExampTypeModel  `css:".typelist>ul>li"`
-	SubModel ExampSubModel `css:".typelist"`
+	Title string `scrago:"title"`
+	Name string `scrago:"#main>.intro>h2::text()"`
+	Description string `scrago:"#main>.intro>p::html()"`
+	Keywords []string  `scrago:"#main .keywords::GetMyKeywords()"`
+	Intro string  `scrago:"#main>.intro::outerHtml()"`
+	TypeList []ExampTypeModel  `scrago:".typelist>ul>li"`
+	SubModel ExampSubModel `scrago:".typelist"`
 }
 
 func (e *ExampModel) GetMyKeywords(s *goquery.Selection) ([]string, error) {
@@ -34,22 +34,22 @@ func (e *ExampModel) GetMyKeywords(s *goquery.Selection) ([]string, error) {
 }
 
 type ExampSubModel struct {
-	TBool bool `css:"li[data-type='bool']"`
-	TInt int `css:"li[data-type='int']"`
-	TFloat float32 `css:"li[data-type='float']"`
-	TString string `css:"li[data-type='string']"`
-	TArray []string `css:"li[data-type='array'] li"`
+	TBool bool `scrago:"li[data-type='bool']"`
+	TInt int `scrago:"li[data-type='int']"`
+	TFloat float32 `scrago:"li[data-type='float']"`
+	TString string `scrago:"li[data-type='string']"`
+	TArray []string `scrago:"li[data-type='array'] li"`
 }
 
 type ExampTypeModel struct {
-	Type string `css:"::attr(data-type)"`
-	Value string  `css:"::text()"`
+	Type string `scrago:"::attr(data-type)"`
+	Value string  `scrago:"::text()"`
 }
 
 func main()  {
 	examp := &ExampModel{}
 	//examp := &ExampSubModel{}
-	htmlContent, err := ioutil.ReadFile("./data/example.html")
+	htmlContent, err := ioutil.ReadFile("../data/example.html")
 	if err != nil {
 		log.Fatal(err)
 	}
