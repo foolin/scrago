@@ -49,7 +49,7 @@ func main()  {
 	examp := &ExampModel{}
 	//examp := &ExampSubModel{}
 	document, _ := goquery.NewDocumentFromReader(strings.NewReader(exampContent))
-	err := scrago.ParserField(examp, document.Selection)
+	err := scrago.ParserDocument(examp, document)
 	if err != nil {
 		log.Fatal(err)
 	}else{

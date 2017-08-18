@@ -18,14 +18,17 @@ const (
 	parserSplitSep = "::"
 )
 
-type CssParser struct {
+type cssTager struct {
 	Selector string
 	FuncName string
 	FuncParams []string
 }
 
+func ParserDocument(v interface{}, document *goquery.Document) (err error) {
+	return ParserSelection(v, document.Selection)
+}
 
-func ParserField(v interface{}, selection *goquery.Selection) (err error) {
+func ParserSelection(v interface{}, selection *goquery.Selection) (err error) {
 	refType := reflect.TypeOf(v)
 	refValue := reflect.ValueOf(v)
 	//log.Printf("%#v kind is %v | %v", v, refValue.Kind(), reflect.Ptr)
@@ -41,14 +44,13 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 		fieldType := refTypeElem.Field(i)
 		fieldValue := refValueElem.Field(i)
 		tagValue := fieldType.Tag.Get(parserTagName)
-		cssParser := newCssParser(tagValue)
-		//log.Printf("===== node selector : %v, func: %v, params: %v", cssParser.Selector, cssParser.FuncName, cssParser.FuncParams)
+		tager := newCssTager(tagValue)
 		node := selection
-		if cssParser.Selector != ""{
-			node = selection.Find(cssParser.Selector)
+		if tager.Selector != ""{
+			node = selection.Find(tager.Selector)
 		}
 		nodeValue := ""
-		switch strings.ToLower(cssParser.FuncName) {
+		switch strings.ToLower(tager.FuncName) {
 		case "text":
 			nodeValue = node.Text()
 		case "html":
@@ -58,32 +60,32 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 		case "value":
 			nodeValue = node.AttrOr("value", "")
 		case "attr":
-			if len(cssParser.FuncParams) > 0 && cssParser.FuncParams[0] != ""{
-				nodeValue = node.AttrOr(cssParser.FuncParams[0], "")
+			if len(tager.FuncParams) > 0 && tager.FuncParams[0] != ""{
+				nodeValue = node.AttrOr(tager.FuncParams[0], "")
 			}
 		case "":
 			nodeValue = node.Text()
 		default:
-			callMethod := refValueElem.MethodByName(cssParser.FuncName)
+			callMethod := refValueElem.MethodByName(tager.FuncName)
 			if !callMethod.IsValid(){
-				callMethod = refValue.MethodByName(cssParser.FuncName)
+				callMethod = refValue.MethodByName(tager.FuncName)
 			}
 			if !callMethod.IsValid(){
-				return fmt.Errorf("method %v not found!", cssParser.FuncName)
+				return fmt.Errorf("method %v not found!", tager.FuncName)
 			}
 			callParams := make([]reflect.Value, 0)
 			callParams = append(callParams, reflect.ValueOf(node))
 			callReturns := callMethod.Call(callParams)
 			if len(callReturns) <= 0{
-				return fmt.Errorf("method %v not return any value", cssParser.FuncName)
+				return fmt.Errorf("method %v not return any value", tager.FuncName)
 			}
 			if callReturns[0].Type() != fieldType.Type{
-				return fmt.Errorf("method %v return value of type %v is not assignable to type %v", cssParser.FuncName, callReturns[0].Type(), fieldType.Type)
+				return fmt.Errorf("method %v return value of type %v is not assignable to type %v", tager.FuncName, callReturns[0].Type(), fieldType.Type)
 			}
 			if len(callReturns) > 1{
 				if err, ok := callReturns[len(callReturns) - 1].Interface().(error); ok{
 					if err != nil {
-						return fmt.Errorf("method %v return error: %v", cssParser.FuncName, err)
+						return fmt.Errorf("method %v return error: %v", tager.FuncName, err)
 					}
 				}
 			}
@@ -140,7 +142,7 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 		case kind == reflect.Ptr:
 			subModel := reflect.New(fieldType.Type.Elem())
 			fieldValue.Set(subModel)
-			err = ParserField(subModel.Interface(), node)
+			err = ParserSelection(subModel.Interface(), node)
 			if err != nil {
 				return fmt.Errorf("%#v parser error: %v", subModel, err)
 			}
@@ -158,7 +160,7 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 				case itemkind == reflect.String:
 					tmp.SetString(subNode.Text())
 				case itemkind == reflect.Struct:
-					err = ParserField(tmp.Addr().Interface(), subNode)
+					err = ParserSelection(tmp.Addr().Interface(), subNode)
 					if err != nil {
 						err = fmt.Errorf("%#v parser error: %v", tmp, err)
 						return false
@@ -168,7 +170,7 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 					tmp.Set(reflect.ValueOf(&tmpStr))
 				case itemkind == reflect.Ptr && tmp.Type().Elem().Kind() == reflect.Struct:
 					tmp = reflect.New(itemtyp.Elem())
-					err = ParserField(tmp.Interface(), subNode)
+					err = ParserSelection(tmp.Interface(), subNode)
 					if err != nil {
 						err = fmt.Errorf("%#v parser error: %v", tmp, err)
 						return false
@@ -188,7 +190,7 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 			fieldValue.SetString(nodeValue)
 		case kind == reflect.Struct:
 			subModel := reflect.New(fieldType.Type)
-			err = ParserField(subModel.Interface(), node)
+			err = ParserSelection(subModel.Interface(), node)
 			if err != nil {
 				return fmt.Errorf("%#v parser error: %v", subModel, err)
 			}
@@ -206,8 +208,8 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 	return nil
 }
 
-func newCssParser(tagValue string) *CssParser {
-	cssParser := &CssParser{}
+func newCssTager(tagValue string) *cssTager {
+	cssParser := &cssTager{}
 	if tagValue == ""{
 		return cssParser
 	}
