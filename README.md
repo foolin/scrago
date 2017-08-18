@@ -5,7 +5,7 @@ In a fast, simple, yet extensible way.
 
 # 中文文档
 
-scrago是一个开源的爬虫框架，通过一种快速、简单、可扩展的方式，从网站中提取你需要的数据。
+scrago是一个基于golang的爬虫框架，通过一种快速、简单、可扩展的方式，从网站中提取你需要的数据。
 
 
 # 特点：
