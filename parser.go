@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 	"strconv"
-	"log"
 )
 //::text()
 //::value()
@@ -29,7 +28,7 @@ type CssParser struct {
 func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 	refType := reflect.TypeOf(v)
 	refValue := reflect.ValueOf(v)
-	log.Printf("%#v kind is %v | %v", v, refValue.Kind(), reflect.Ptr)
+	//log.Printf("%#v kind is %v | %v", v, refValue.Kind(), reflect.Ptr)
 	if refValue.Kind() != reflect.Ptr{
 		return fmt.Errorf("%v is non-pointer?",  refType)
 	}
@@ -43,7 +42,7 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 		fieldValue := refValueElem.Field(i)
 		tagValue := fieldType.Tag.Get(parserTagName)
 		cssParser := newCssParser(tagValue)
-		log.Printf("===== node selector : %v, func: %v, params: %v", cssParser.Selector, cssParser.FuncName, cssParser.FuncParams)
+		//log.Printf("===== node selector : %v, func: %v, params: %v", cssParser.Selector, cssParser.FuncName, cssParser.FuncParams)
 		node := selection
 		if cssParser.Selector != ""{
 			node = selection.Find(cssParser.Selector)
@@ -78,37 +77,67 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 			if len(callReturns) <= 0{
 				return fmt.Errorf("method %v not return any value", cssParser.FuncName)
 			}
+			if callReturns[0].Type() != fieldType.Type{
+				return fmt.Errorf("method %v return value of type %v is not assignable to type %v", cssParser.FuncName, callReturns[0].Type(), fieldType.Type)
+			}
+			if len(callReturns) > 1{
+				if err, ok := callReturns[len(callReturns) - 1].Interface().(error); ok{
+					if err != nil {
+						return fmt.Errorf("method %v return error: %v", cssParser.FuncName, err)
+					}
+				}
+			}
 			fieldValue.Set(callReturns[0])
 			continue
 		}
 
-		switch fieldType.Type.Kind() {
-			//Bool
-		case reflect.Bool:
-			value, _ := strconv.ParseBool(nodeValue)
+		//set value
+		kind := fieldType.Type.Kind()
+		switch {
+		//Bool
+		case kind == reflect.Bool:
+			value, err := strconv.ParseBool(nodeValue)
+			if err != nil {
+				return fmt.Errorf("field %v convert value %v to %v error: %v", fieldType, nodeValue, kind, err)
+			}
 			fieldValue.SetBool(value)
 			//Int
 			//Int8
 			//Int16
 			//Int32
 			//Int64
+		case kind >= reflect.Int && kind <= reflect.Int64:
+			value, err := strconv.ParseInt(nodeValue, 10, int(fieldValue.Type().Size()*8))
+			if err != nil {
+				return fmt.Errorf("field %v convert value %v to %v error: %v", fieldType, nodeValue, kind, err)
+			}
+			fieldValue.SetInt(value)
 			//Uint
 			//Uint8
 			//Uint16
 			//Uint32
 			//Uint64
 			//Uintptr
+		case kind >= reflect.Uint && kind <= reflect.Uintptr:
+			value, err := strconv.ParseUint(nodeValue, 10, int(fieldValue.Type().Size()*8))
+			if err != nil {
+				return fmt.Errorf("field %v convert value %v to %v error: %v", fieldType, nodeValue, kind, err)
+			}
+			fieldValue.SetUint(value)
 			//Float32
 			//Float64
-			//Complex64
-			//Complex128
-			//Array
-			//Chan
-			//Func
+		case kind == reflect.Float32 || kind == reflect.Float64:
+			value, err := strconv.ParseFloat(nodeValue, 64)
+			if err != nil {
+				return fmt.Errorf("field %v convert value %v to %v error: %v", fieldType, nodeValue, kind, err)
+			}
+			fieldValue.SetFloat(value)
 			//Interface
+		case kind == reflect.Interface:
+			fieldValue.Set(reflect.ValueOf(nodeValue))
 			//Map
 			//Ptr
-		case reflect.Ptr:
+		case kind == reflect.Ptr:
 			subModel := reflect.New(fieldType.Type.Elem())
 			fieldValue.Set(subModel)
 			err = ParserField(subModel.Interface(), node)
@@ -116,19 +145,62 @@ func ParserField(v interface{}, selection *goquery.Selection) (err error) {
 				return fmt.Errorf("%#v parser error: %v", subModel, err)
 			}
 			//Slice
-		//case reflect.Slice:
-
-		case reflect.String:
+		case kind == reflect.Slice:
+			slicetyp := fieldValue.Type()
+			itemtyp := slicetyp.Elem()
+			itemkind := itemtyp.Kind()
+			slice := reflect.MakeSlice(slicetyp, node.Size(), node.Size())
+			node.EachWithBreak(func(i int, subNode *goquery.Selection) bool {
+				//outhtml, _ := goquery.OuterHtml(subNode)
+				//log.Printf("%v => %v", i, outhtml)
+				tmp := reflect.New(itemtyp).Elem()
+				switch {
+				case itemkind == reflect.String:
+					tmp.SetString(subNode.Text())
+				case itemkind == reflect.Struct:
+					err = ParserField(tmp.Addr().Interface(), subNode)
+					if err != nil {
+						err = fmt.Errorf("%#v parser error: %v", tmp, err)
+						return false
+					}
+				case itemkind == reflect.Ptr && tmp.Type().Elem().Kind() == reflect.String:
+					tmpStr := subNode.Text()
+					tmp.Set(reflect.ValueOf(&tmpStr))
+				case itemkind == reflect.Ptr && tmp.Type().Elem().Kind() == reflect.Struct:
+					tmp = reflect.New(itemtyp.Elem())
+					err = ParserField(tmp.Interface(), subNode)
+					if err != nil {
+						err = fmt.Errorf("%#v parser error: %v", tmp, err)
+						return false
+					}
+				default:
+					err = fmt.Errorf("slice not support item type %v, kind %v", itemtyp, itemkind)
+					return false
+				}
+				slice.Index(i).Set(tmp)
+				return true
+			})
+			if err != nil {
+				return err
+			}
+			fieldValue.Set(slice)
+		case kind == reflect.String:
 			fieldValue.SetString(nodeValue)
-		case reflect.Struct:
+		case kind == reflect.Struct:
 			subModel := reflect.New(fieldType.Type)
-			log.Printf("%#v", subModel)
 			err = ParserField(subModel.Interface(), node)
 			if err != nil {
 				return fmt.Errorf("%#v parser error: %v", subModel, err)
 			}
 			fieldValue.Set(subModel.Elem())
 			//UnsafePointer
+			//Complex64
+			//Complex128
+			//Array
+			//Chan
+			//Func
+		default:
+			return fmt.Errorf("field %v not support type %v", fieldType, kind)
 		}
 	}
 	return nil
