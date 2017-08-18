@@ -205,5 +205,9 @@ func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
 ```
 
 
+# 更多示例
+ * [Simple](https://github.com/foolin/scrago/tree/master/example/simple "Simple Example")
+ * [Parser](https://github.com/foolin/scrago/tree/master/example/parser "Parser Example")
+
 # 依赖
  * github.com/PuerkitoBio/goquery
