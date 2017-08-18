@@ -159,13 +159,13 @@ func printjson(v interface{})  {
 ```
 
 # Struct标签说明
-tag使用scrago作为标签标示，语法如下：
+tag使用scrago作为标签标示，选择器和方法之间用::分开，语法如下：
 ```go
 `scrago:"selector::function"`
 
 ```
 * selector:
-  Css选择器，类似jquery语法，具体使用请参考：github.com/PuerkitoBio/goquery
+  CSS选择器，类似jquery语法，具体使用请参考：github.com/PuerkitoBio/goquery
 
 * function:
   函数方法，可自定义。如果省略，则默认是text方法。
@@ -178,30 +178,31 @@ tag使用scrago作为标签标示，语法如下：
 
   2.自定义方法：
   struct对象如下：
-  ```go
-    func (e *ExampModel) 函数名(s *goquery.Selection) (返回类型, error) {
-    	//todo
-    	return 返回值, nil
-    }
+```go
 
-  ```
+func (e *ExampModel) 函数名(s *goquery.Selection) (返回类型, error) {
+    //todo
+    return 返回值, nil
+}
+
+```
 
   例如：
-  ```go
+```go
 
-        type ExampModel struct {
-            TextField string `scrago:"#xxx"`
-            TextField2 string `scrago:".xxx::text()"`
-            Link string `scrago:"a::attr(href)"`
-            MyField string  `scrago:"#xxx::MyFunc()"`
-        }
+type ExampModel struct {
+    TextField string `scrago:"#xxx"`
+    TextField2 string `scrago:".xxx::text()"`
+    Link string `scrago:"a::attr(href)"`
+    MyField string  `scrago:"#xxx::MyFunc()"`
+}
 
-        func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
-            //todo
-            return s.Text(), nil
-        }
+func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
+    //todo
+    return s.Text(), nil
+}
 
-    ```
+```
 
 
 # 依赖
