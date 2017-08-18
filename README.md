@@ -21,7 +21,7 @@ scrago是一个开源的爬虫框架，通过一种快速、简单、可扩展�
 
 # 示例
 
-假如要抓取抓取页面：
+抓取目标页面：
 ```html
 <!doctype html>
 <html class="no-js" lang="">
@@ -85,7 +85,7 @@ scrago是一个开源的爬虫框架，通过一种快速、简单、可扩展�
 ```
 
 
-## 第一步：
+### 第一步：
 创建抓取数据struct，代码：
 ```go
 
@@ -111,7 +111,7 @@ func (e *ExampModel) GetMyKeywords(s *goquery.Selection) ([]string, error) {
 
 ```
 
-## 第二步:
+### 第二步:
 编写抓取逻辑：
 ```go
 
@@ -135,7 +135,7 @@ func printjson(v interface{})  {
 
 ```
 
-## 第三步:
+### 第三步:
 执行并返回结果：
 
 ```json
@@ -158,6 +158,52 @@ func printjson(v interface{})  {
 
 ```
 
+# Struct标签说明
+tag使用scrago作为标签标示，语法如下：
+```go
+`scrago:"selector::function"`
+
+```
+* selector:
+  Css选择器，类似jquery语法，具体使用请参考：github.com/PuerkitoBio/goquery
+
+* function:
+  函数方法，可自定义。
+
+  1.自带方法：
+  - text 获取文本
+  - html 获取html
+  - outerHtml 获取整个节点html
+  - attr(xxx) 获取节点属性，例如：attr(href)则获取<a href="http://www.liufu.me">liufu</a>中的href属性值。
+
+  2.自定义方法：
+  struct对象如下：
+  ```go
+    func (e *ExampModel) 函数名(s *goquery.Selection) (返回类型, error) {
+    	//todo
+    	return 返回值, nil
+    }
+
+  ```
+
+  例如：
+
+  ```go
+      func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
+      	//todo
+      	return s.Text(), nil
+      }
+
+    ```
+
+    则tag如下：
+    ``go
+
+    type ExampModel struct {
+    	Xxxx string  `scrago:"selector::MyFunc()"`
+    }
+
+    ```
 
 # 依赖
  * github.com/PuerkitoBio/goquery
