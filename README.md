@@ -1,5 +1,5 @@
-# ENGLISH
-[English document](https://github.com/foolin/scrago/README_EN.md)
+# English
+[English document](https://github.com/foolin/scrago/blob/master/README_EN.md)
 
 # scrago
 
