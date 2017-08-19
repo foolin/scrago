@@ -168,7 +168,7 @@ Between selector and function use "::" symbol segmentation
   - outerHtml() get outer html value.
   - attr(xxx) get attribute value, eg：attr(href)。
 
-  2.write self function：
+  2.Write custom function：
 ```go
 
 func (e *ExampModel) MyFunc(s *goquery.Selection) (MyReturnType, error) {
