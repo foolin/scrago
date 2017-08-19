@@ -1,17 +1,10 @@
+# ENGLISH
+[English document](https://github.com/foolin/scrago/README_EN.md)
+
 # scrago
-
-Scrago is an open source and collaborative framework for extracting the data you need from websites.
-In a fast, simple, yet extensible way.
-
-# 中文文档
 
 scrago是一个基于golang的爬虫框架，通过一种快速、简单、可扩展的方式，从网站中提取你需要的数据。
 
-
-# 特点：
- * 快速
- * 简单
- * 可扩展
 
 # 安装
 
@@ -175,9 +168,9 @@ tag使用scrago作为标签标示，选择器和方法之间用::分开，语法
   函数方法，可自定义。如果省略，则默认是text方法。
 
   1.自带方法：
-  - text 获取文本
-  - html 获取html
-  - outerHtml 获取整个节点html
+  - text() 获取文本
+  - html() 获取html
+  - outerHtml() 获取整个节点html
   - attr(xxx) 获取节点属性，例如：attr(href)则获取<a href="http://www.liufu.me">liufu</a>中的href属性值。
 
   2.自定义方法：
