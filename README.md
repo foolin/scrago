@@ -14,7 +14,7 @@ scrago是一个基于golang的爬虫框架，通过一种快速、简单、可�
 
 # 文档
 
-[Document](https://godoc.org/github.com/foolin/scrago "go document")
+[Godoc](https://godoc.org/github.com/foolin/scrago "go document")
 
 # 示例
 

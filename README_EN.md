@@ -9,9 +9,9 @@ Scrago is an simpe, fast, extensible crawl page framework for golang.
  go get github.com/foolin/scrago
 ```
 
-# Godoc
+# Document
 
-[Document](https://godoc.org/github.com/foolin/scrago "go document")
+[Godoc](https://godoc.org/github.com/foolin/scrago "go document")
 
 # Exmaple
 
