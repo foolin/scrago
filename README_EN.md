@@ -199,6 +199,7 @@ func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
 # Exmaples
  * [Simple](https://github.com/foolin/scrago/tree/master/example/simple "Simple Example")
  * [Parser](https://github.com/foolin/scrago/tree/master/example/parser "Parser Example")
+ * [Quotesbot](https://github.com/foolin/scrago/tree/master/example/quotesbot "Quotesbot Example")
 
 # Relative
  * github.com/PuerkitoBio/goquery
