@@ -178,7 +178,7 @@ func (e *ExampModel) MyFunc(s *goquery.Selection) (MyReturnType, error) {
 
 ```
 
-  例如：
+   eg：
 ```go
 
 type ExampModel struct {
