@@ -15,69 +15,6 @@ Scrago is an simpe, fast, extensible crawl page framework for golang.
 
 # Exmaple
 
-Target page：
-```html
-<!doctype html>
-<html class="no-js" lang="">
-
-<head>
-    <meta charset="utf-8">
-    <title>Scrago exmaples</title>
-</head>
-
-<body>
-<div id="header">
-    <div class="container">
-        <div class="clearfix">
-            <div class="logo">
-                <a href="https://github.com/foolin/scrago" title="Scrago exmaple">
-                    <h1 title="Scrago exmaple - crawl framework for go">Scrago exmaple</h1>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="navlink">
-    <div class="container">
-        <ul class="clearfix">
-            <li ><a href="/">Index</a></li>
-            <li ><a href="/list/web" title="web site">Web page</a></li>
-            <li ><a href="/list/pc" title="pc page">Pc Page</a></li>
-            <li ><a href="/list/mobile" title="mobile page">Mobile Page</a></li>
-        </ul>
-    </div>
-</div>
-
-<div id="main">
-    <div class="intro">
-        <h2>Scrago framework</h2>
-        <p>An open source and collaborative framework for extracting the data you need from websites.
-            In a <b>fast</b>, <b>simple</b>, yet extensible way.</p>
-        <div class="keywords">Scrago, Scrap, Spider, Crawl, GoLang, Simple, Easy</div>
-    </div>
-    <div class="typelist">
-        <ul>
-            <li data-type="bool">true</li>
-            <li data-type="int">123</li>
-            <li data-type="float">45.6</li>
-            <li data-type="string">hello</li>
-            <li data-type="array">
-                <ol>
-                    <li>Aa</li>
-                    <li>Bb</li>
-                    <li>Cc</li>
-                </ol>
-            </li>
-        </ul>
-    </div>
-
-</div>
-
-</body>
-</html>
-```
-
 
 ### Step 1：
 ```go
@@ -148,6 +85,69 @@ Execute result：
     ]
 }
 
+```
+
+Origin page：
+```html
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <title>Scrago exmaples</title>
+</head>
+
+<body>
+<div id="header">
+    <div class="container">
+        <div class="clearfix">
+            <div class="logo">
+                <a href="https://github.com/foolin/scrago" title="Scrago exmaple">
+                    <h1 title="Scrago exmaple - crawl framework for go">Scrago exmaple</h1>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navlink">
+    <div class="container">
+        <ul class="clearfix">
+            <li ><a href="/">Index</a></li>
+            <li ><a href="/list/web" title="web site">Web page</a></li>
+            <li ><a href="/list/pc" title="pc page">Pc Page</a></li>
+            <li ><a href="/list/mobile" title="mobile page">Mobile Page</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="main">
+    <div class="intro">
+        <h2>Scrago framework</h2>
+        <p>An open source and collaborative framework for extracting the data you need from websites.
+            In a <b>fast</b>, <b>simple</b>, yet extensible way.</p>
+        <div class="keywords">Scrago, Scrap, Spider, Crawl, GoLang, Simple, Easy</div>
+    </div>
+    <div class="typelist">
+        <ul>
+            <li data-type="bool">true</li>
+            <li data-type="int">123</li>
+            <li data-type="float">45.6</li>
+            <li data-type="string">hello</li>
+            <li data-type="array">
+                <ol>
+                    <li>Aa</li>
+                    <li>Bb</li>
+                    <li>Cc</li>
+                </ol>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
 ```
 
 # Struct tag
