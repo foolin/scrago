@@ -1,24 +1,21 @@
-# English
-[English document](https://github.com/foolin/scrago/blob/master/README_EN.md)
-
 # scrago
 
-scrago是一个基于golang的爬虫框架，通过一种快速、简单、可扩展的方式，从网站中提取你需要的数据。
+Scrago is an simpe, fast, extensible crawl page framework for golang.
 
 
-# 安装
+# Install
 
 ```
  go get github.com/foolin/scrago
 ```
 
-# 文档
+# Document
 
 [Godoc](https://godoc.org/github.com/foolin/scrago "go document")
 
-# 示例
+# Exmaple
 
-抓取目标页面：
+Target page：
 ```html
 <!doctype html>
 <html class="no-js" lang="">
@@ -82,8 +79,7 @@ scrago是一个基于golang的爬虫框架，通过一种快速、简单、可�
 ```
 
 
-### 第一步：
-创建抓取数据struct，代码：
+### Step 1：
 ```go
 
 type ExampModel struct {
@@ -108,8 +104,7 @@ func (e *ExampModel) GetMyKeywords(s *goquery.Selection) ([]string, error) {
 
 ```
 
-### 第二步:
-编写抓取逻辑：
+### Step 2:
 ```go
 
 func main()  {
@@ -132,8 +127,8 @@ func printjson(v interface{})  {
 
 ```
 
-### 第三步:
-执行并返回结果：
+### Step 3:
+Execute result：
 
 ```json
 
@@ -155,36 +150,35 @@ func printjson(v interface{})  {
 
 ```
 
-# Struct标签说明
-tag使用scrago作为标签标示，选择器和方法之间用::分开，语法如下：
+# Struct tag
+Between selector and function use "::" symbol segmentation
 ```go
 `scrago:"selector::function"`
 
 ```
 * selector:
-  CSS选择器，类似jquery语法，具体使用请参考：github.com/PuerkitoBio/goquery
+  Css selector, sea more：github.com/PuerkitoBio/goquery
 
 * function:
-  函数方法，可自定义。如果省略，则默认是text方法。
+  Get data function，default is text()。
 
-  1.自带方法：
-  - text() 获取文本
-  - html() 获取html
-  - outerHtml() 获取整个节点html
-  - attr(xxx) 获取节点属性，例如：attr(href)则获取<a href="http://www.liufu.me">liufu</a>中的href属性值。
+  1.Inner function：
+  - text() get text value.
+  - html() get html vlaue.
+  - outerHtml() get outer html value.
+  - attr(xxx) get attribute value, eg：attr(href)。
 
-  2.自定义方法：
-  struct对象如下：
+  2.Write custom function：
 ```go
 
-func (e *ExampModel) 函数名(s *goquery.Selection) (返回类型, error) {
+func (e *ExampModel) MyFunc(s *goquery.Selection) (MyReturnType, error) {
     //todo
-    return 返回值, nil
+    return ReturnValue, nil
 }
 
 ```
 
-  例如：
+   eg：
 ```go
 
 type ExampModel struct {
@@ -202,10 +196,10 @@ func (e *ExampModel) MyFunc(s *goquery.Selection) (String, error) {
 ```
 
 
-# 更多示例
+# Exmaples
  * [Simple](https://github.com/foolin/scrago/tree/master/example/simple "Simple Example")
  * [Parser](https://github.com/foolin/scrago/tree/master/example/parser "Parser Example")
  * [Quotesbot](https://github.com/foolin/scrago/tree/master/example/quotesbot "Quotesbot Example")
 
-# 依赖
+# Relative
  * github.com/PuerkitoBio/goquery
